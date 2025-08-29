@@ -28,19 +28,23 @@ export default function StevePhysics({ level, isLevelingUp, children, onLevelUpC
 
   // Create persistent geometry and materials to avoid Three.js errors
   const trailGeometry = useMemo(() => new THREE.CylinderGeometry(0.3, 0.6, 4, 8), [])
-  const flickMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+  const flickMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     color: "#00ff88",
     transparent: true,
     opacity: 0.3,
     emissive: "#00ff88",
-    emissiveIntensity: 0.2
+    emissiveIntensity: 0.2,
+    metalness: 0,
+    roughness: 1
   }), [])
-  const jumpMaterial = useMemo(() => new THREE.MeshBasicMaterial({
+  const jumpMaterial = useMemo(() => new THREE.MeshStandardMaterial({
     color: "#00ff88",
     transparent: true,
     opacity: 0.4,
     emissive: "#00ff88",
-    emissiveIntensity: 0.3
+    emissiveIntensity: 0.3,
+    metalness: 0,
+    roughness: 1
   }), [])
 
   // Handle level up jumps
