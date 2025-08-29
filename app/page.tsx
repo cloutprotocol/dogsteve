@@ -135,7 +135,7 @@ export default function Home() {
   }
 
   return (
-    <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+    <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 0' }}>
       <div className="tamagotchi-device">
         <div className="screen-container">
           <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} />
@@ -157,7 +157,8 @@ export default function Home() {
         </div>
 
         <div className="buttons-container">
-          <div className="button-group">
+          {/* Top left buttons */}
+          <div className="button-group left-buttons">
             <button 
               className="tamagotchi-button"
               onClick={() => {
@@ -178,23 +179,16 @@ export default function Home() {
             </button>
           </div>
           
-          <div className="button-group">
-            <button 
-              className="tamagotchi-button center-button"
-              onClick={handleHeartClick}
-            >
-              ♥
-            </button>
-          </div>
-          
-          <div className="joystick-container">
+          {/* Center joystick */}
+          <div className="joystick-container" style={{ gridColumn: '2', gridRow: '1' }}>
             <Joystick 
               onMove={(x, y) => setJoystickInput({ x, y })}
-              size={120}
+              size={110}
             />
           </div>
           
-          <div className="button-group">
+          {/* Top right buttons */}
+          <div className="button-group right-buttons">
             <button 
               className="tamagotchi-button"
               onClick={() => {
@@ -214,6 +208,15 @@ export default function Home() {
               P
             </button>
           </div>
+          
+          {/* Bottom center heart button */}
+          <button 
+            className="tamagotchi-button center-button"
+            onClick={handleHeartClick}
+            style={{ gridColumn: '2', gridRow: '3' }}
+          >
+            ♥
+          </button>
         </div>
 
         {/* Hearts centered over screen */}
@@ -241,6 +244,11 @@ export default function Home() {
 
         <div className="contract-always-visible">
           DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX
+        </div>
+
+        {/* Gameboy bottom section for mobile */}
+        <div className="gameboy-bottom">
+          <div className="gameboy-speaker"></div>
         </div>
       </div>
     </main>

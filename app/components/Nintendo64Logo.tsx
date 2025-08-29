@@ -63,25 +63,24 @@ export default function Nintendo64Logo({ heartClicks, heartJustClicked, joystick
       if (scene) {
         scene.traverse((child) => {
           if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-            // Base glow that increases with heart clicks
+            // Only glow when heart is pressed or at 100%
             const chargeLevel = heartClicks / 100
-            const baseGlow = chargeLevel * 0.5
             
             // Explosion effect at 100%
             const isFullyCharged = heartClicks >= 100
             const explosionIntensity = isFullyCharged ? 2 + Math.sin(state.clock.elapsedTime * 10) * 1.5 : 0
             
-            // Heart click pulse effect
-            const pulseIntensity = heartJustClicked ? 1 + Math.sin(state.clock.elapsedTime * 20) * 0.8 : 0
+            // Heart click pulse effect - green glow
+            const pulseIntensity = heartJustClicked ? 1.5 + Math.sin(state.clock.elapsedTime * 20) * 0.8 : 0
             
-            // Combine all effects
-            const totalIntensity = baseGlow + explosionIntensity + pulseIntensity
+            // Combine effects (no base glow)
+            const totalIntensity = explosionIntensity + pulseIntensity
             
             if (totalIntensity > 0) {
-              // Progressive color: blue -> purple -> pink -> white
-              const red = Math.min(1, 0.2 + chargeLevel * 1.5 + explosionIntensity * 0.3)
-              const green = Math.min(1, 0.1 + explosionIntensity * 0.5)
-              const blue = Math.min(1, 0.8 - chargeLevel * 0.3 + explosionIntensity * 0.2)
+              // Green glow for heart clicks, white for explosion
+              const red = explosionIntensity > 0 ? Math.min(1, explosionIntensity * 0.5) : 0
+              const green = pulseIntensity > 0 ? 1 : Math.min(1, explosionIntensity * 0.5)
+              const blue = explosionIntensity > 0 ? Math.min(1, explosionIntensity * 0.5) : 0
               
               child.material.emissive.setRGB(red * totalIntensity, green * totalIntensity, blue * totalIntensity)
               child.material.emissiveIntensity = totalIntensity
