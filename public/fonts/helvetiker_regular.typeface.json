@@ -1,0 +1,19 @@
+{
+  "glyphs": {},
+  "familyName": "helvetiker",
+  "ascender": 1462,
+  "descender": -325,
+  "underlinePosition": -100,
+  "underlineThickness": 50,
+  "boundingBox": {
+    "yMin": -325,
+    "xMin": -111,
+    "yMax": 1462,
+    "xMax": 1777
+  },
+  "resolution": 2048,
+  "original_font_information": {
+    "format": 0,
+    "copyright": "Copyright (c) 2009 Bitstream Inc."
+  }
+}
