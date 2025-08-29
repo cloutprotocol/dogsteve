@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback, useRef, useEffect } from 'react'
 import Scene from './components/Scene'
 
 export default function Home() {
@@ -9,6 +9,16 @@ export default function Home() {
   const [notification, setNotification] = useState('')
   const [heartClicks, setHeartClicks] = useState(0)
   const [heartJustClicked, setHeartJustClicked] = useState(false)
+  const [level, setLevel] = useState(0)
+  const [totalHeartClicks, setTotalHeartClicks] = useState(0)
+
+  // Update level based on total clicks
+  useEffect(() => {
+    const newLevel = Math.floor(totalHeartClicks / 100)
+    if (newLevel !== level) {
+      setLevel(newLevel)
+    }
+  }, [totalHeartClicks, level])
 
   // Single persistent AudioContext
   const audioContextRef = useRef<AudioContext | null>(null)
@@ -87,10 +97,13 @@ export default function Home() {
     }))
     setHearts(prev => [...prev, ...newHearts])
     
+    // Increment total clicks (never resets)
+    setTotalHeartClicks(prev => prev + 1)
+    
     setHeartClicks(prev => {
       const newCount = prev + 1
       
-      // Play sounds based on progress
+      // Check if we should level up
       if (newCount >= 100) {
         playExplosionSound() // Epic explosion at 100
         return 0 // Reset after 100 clicks
@@ -126,7 +139,7 @@ export default function Home() {
           <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} />
           <div className="ui-overlay">
             <div className="steve-text">
-              STEVE
+              {level > 0 ? `LVL ${level} STEVE` : 'STEVE'}
             </div>
             <div className="heart-bar">
               <div className="heart-bar-label">♥</div>
