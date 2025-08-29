@@ -167,6 +167,14 @@ body {
   background: linear-gradient(145deg, #ff6b6b, #ff4757);
 }
 
+.joystick-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  margin-bottom: 15px;
+}
+
 .hearts-container {
   position: absolute;
   top: 50px;

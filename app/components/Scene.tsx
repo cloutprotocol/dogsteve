@@ -18,7 +18,7 @@ function LoadingScreen() {
   )
 }
 
-export default function Scene({ heartClicks, heartJustClicked }: { heartClicks: number, heartJustClicked: boolean }) {
+export default function Scene({ heartClicks, heartJustClicked, joystickInput }: { heartClicks: number, heartJustClicked: boolean, joystickInput?: { x: number, y: number } }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export default function Scene({ heartClicks, heartJustClicked }: { heartClicks: 
           distance={4}
         />
         
-        <Nintendo64Logo heartClicks={heartClicks} heartJustClicked={heartJustClicked} />
+        <Nintendo64Logo heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} />
         <Environment preset="city" />
         
         <OrbitControls enablePan={false} enableZoom={false} />

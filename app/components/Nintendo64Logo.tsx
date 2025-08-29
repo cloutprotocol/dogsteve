@@ -6,10 +6,11 @@ import { Html, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TradingChart from './TradingChart'
 
-export default function Nintendo64Logo({ heartClicks, heartJustClicked }: { heartClicks: number, heartJustClicked?: boolean }) {
+export default function Nintendo64Logo({ heartClicks, heartJustClicked, joystickInput }: { heartClicks: number, heartJustClicked?: boolean, joystickInput?: { x: number, y: number } }) {
   const logoRef = useRef<THREE.Group>(null)
   const modelRef = useRef<THREE.Group>(null)
   const { scene } = useGLTF('/tsteve.glb')
+  const rotationRef = useRef({ x: 0, y: 0 })
 
   // Apply shader effect to all meshes in the model
   useEffect(() => {
@@ -31,9 +32,32 @@ export default function Nintendo64Logo({ heartClicks, heartJustClicked }: { hear
       logoRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.8) * 0.1
     }
     if (modelRef.current) {
-      modelRef.current.rotation.x = state.clock.elapsedTime * 0.5
-      modelRef.current.rotation.y = state.clock.elapsedTime * 0.3
+      // Keep the floating motion regardless of control mode
       modelRef.current.position.y = Math.sin(state.clock.elapsedTime * 1.2) * 0.1
+      
+      // Use joystick input for orbit-style rotation or fall back to automatic rotation
+      if (joystickInput && (joystickInput.x !== 0 || joystickInput.y !== 0)) {
+        // Manual orbit control with joystick
+        // Apply exponential scaling - faster at the edges
+        const xIntensity = Math.sign(joystickInput.x) * Math.pow(Math.abs(joystickInput.x), 2) * 0.08
+        const yIntensity = Math.sign(joystickInput.y) * Math.pow(Math.abs(joystickInput.y), 2) * 0.08
+        
+        rotationRef.current.y += xIntensity // Horizontal rotation
+        rotationRef.current.x += yIntensity // Vertical rotation
+        
+        // Clamp vertical rotation to prevent flipping
+        rotationRef.current.x = Math.max(-Math.PI/2, Math.min(Math.PI/2, rotationRef.current.x))
+        
+        modelRef.current.rotation.x = rotationRef.current.x
+        modelRef.current.rotation.y = rotationRef.current.y
+      } else {
+        // Automatic rotation when not being controlled
+        modelRef.current.rotation.x = state.clock.elapsedTime * 0.5
+        modelRef.current.rotation.y = state.clock.elapsedTime * 0.3
+        // Update rotation ref to match automatic rotation
+        rotationRef.current.x = state.clock.elapsedTime * 0.5
+        rotationRef.current.y = state.clock.elapsedTime * 0.3
+      }
 
       // Apply progressive glow effect based on heart clicks
       if (scene) {

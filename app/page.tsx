@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import Scene from './components/Scene'
+import Joystick from './components/Joystick'
 
 export default function Home() {
   const [showContract, setShowContract] = useState(false)
@@ -11,6 +12,7 @@ export default function Home() {
   const [heartJustClicked, setHeartJustClicked] = useState(false)
   const [level, setLevel] = useState(0)
   const [totalHeartClicks, setTotalHeartClicks] = useState(0)
+  const [joystickInput, setJoystickInput] = useState({ x: 0, y: 0 })
 
   // Update level based on total clicks
   useEffect(() => {
@@ -136,7 +138,7 @@ export default function Home() {
     <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div className="tamagotchi-device">
         <div className="screen-container">
-          <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} />
+          <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} />
           <div className="ui-overlay">
             <div className="steve-text">
               {level > 0 ? `LVL ${level} STEVE` : 'STEVE'}
@@ -183,6 +185,13 @@ export default function Home() {
             >
               ♥
             </button>
+          </div>
+          
+          <div className="joystick-container">
+            <Joystick 
+              onMove={(x, y) => setJoystickInput({ x, y })}
+              size={120}
+            />
           </div>
           
           <div className="button-group">
