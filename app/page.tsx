@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import Scene from './components/Scene'
 import Joystick from './components/Joystick'
+import PsychedelicBackground from './components/PsychedelicBackground'
 
 export default function Home() {
   const [showContract, setShowContract] = useState(false)
@@ -136,6 +137,7 @@ export default function Home() {
 
   return (
     <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+      <PsychedelicBackground />
       <div className="tamagotchi-device">
         <div className="screen-container">
           <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} notification={notification} />

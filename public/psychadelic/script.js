@@ -79,68 +79,26 @@ class World {
   document.addEventListener("DOMContentLoaded", domIsReady);
   let mousePos = { x: 0, y: 0, px: 0, py: 0 };
   let world;
-  let gui = new dat.GUI();
   
   
   let parameters = {
-    speed: .2,
-    hue: .5,
-    hueVariation: 1,
+    speed: .1,
+    hue: .44,
+    hueVariation: 0,
     gradient: .3,
-    density: .5,
-    displacement: .66 };
+    density: .1,
+    displacement: .11 };
   
   
   
   function domIsReady() {
-    world = new World(this.container, this.renderer, window.innerWidth, window.innerHeight);
+    world = new World(window.innerWidth, window.innerHeight);
     window.addEventListener('resize', handleWindowResize, false);
     document.addEventListener("mousemove", handleMouseMove, false);
     handleWindowResize();
     world.loop();
-    initGui();
   }
   
-  var guiHue;
-  
-  function initGui() {
-    gui.width = 250;
-    guiSpeed = gui.add(parameters, 'speed').min(.1).max(1).step(.01).name('speed');
-    guiHue = gui.add(parameters, 'hue').min(0).max(1).step(.01).name('hue');
-    guiVariation = gui.add(parameters, 'hueVariation').min(0).max(1).step(.01).name('hue variation');
-    //guiGradient = gui.add(parameters, 'gradient').min(0).max(1).step(.01).name('inner gradient');
-    guiDensity = gui.add(parameters, 'density').min(0).max(1).step(.01).name('density');
-    guiDisp = gui.add(parameters, 'displacement').min(0).max(1).step(.01).name('displacement');
-  
-    guiHue.onChange(function (value) {
-      updateParameters();
-    });
-  
-    guiVariation.onChange(function (value) {
-      updateParameters();
-    });
-    /*
-    guiGradient.onChange( function(value) {
-        updateParameters();
-    });
-    */
-    guiDensity.onChange(function (value) {
-      updateParameters();
-    });
-  
-    guiDisp.onChange(function (value) {
-      updateParameters();
-    });
-    updateParameters();
-  }
-  
-  function updateParameters() {
-    world.plane.material.uniforms.uHue.value = parameters.hue;
-    world.plane.material.uniforms.uHueVariation.value = parameters.hueVariation;
-    //world.plane.material.uniforms.uGradient.value = parameters.gradient;
-    world.plane.material.uniforms.uDensity.value = parameters.density;
-    world.plane.material.uniforms.uDisplacement.value = parameters.displacement;
-  }
   
   function handleWindowResize() {
     world.updateSize(window.innerWidth, window.innerHeight);

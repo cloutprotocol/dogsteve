@@ -1,6 +1,8 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:400,900");
 body {
   overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 canvas {
@@ -9,50 +11,10 @@ canvas {
 
 .world {
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background: #FF4066;
+  top: 0;
+  left: 0;
 }
 
-.title {
-  position: absolute;
-  color: white;
-  width: calc 20%;
-  font-size: 24px;
-  font-weight: 900;
-  font-family: "Poppins";
-  letter-spacing: 1px;
-  bottom: 40px;
-  left: 40px;
-}
-
-.remark {
-  position: relative;
-  color: white;
-  font-size: 10px;
-  font-family: "Poppins";
-  font-weight: 400;
-  letter-spacing: 1px;
-  line-height: 1.5;
-}
-
-.credits {
-  position: relative;
-  color: white;
-  margin-top: 20px;
-  font-size: 10px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 900;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-}
-
-.credits a {
-  color: white;
-  text-decoration: none;
-}
-
-.credits a:hover {
-  color: blue;
-  text-decoration: none;
-}
