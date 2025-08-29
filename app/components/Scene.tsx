@@ -4,7 +4,7 @@ import { Canvas } from '@react-three/fiber'
 import { Environment, OrbitControls } from '@react-three/drei'
 import Nintendo64Logo from './Nintendo64Logo'
 
-export default function Scene() {
+export default function Scene({ heartClicks }: { heartClicks: number }) {
   return (
     <Canvas
       camera={{ position: [0, 0, 4], fov: 50 }}
@@ -17,7 +17,7 @@ export default function Scene() {
       <pointLight position={[15, 5, -5]} color="#ff6b6b" intensity={0.2} />
       <pointLight position={[-5, -15, 10]} color="#ffffff" intensity={0.1} />
       
-      <Nintendo64Logo />
+      <Nintendo64Logo heartClicks={heartClicks} />
       
       <Environment preset="city" />
       <OrbitControls enablePan={false} enableZoom={false} />

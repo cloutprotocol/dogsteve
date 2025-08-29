@@ -1,43 +1,146 @@
 'use client'
 
+import { useState } from 'react'
 import Scene from './components/Scene'
 
 export default function Home() {
+  const [showContract, setShowContract] = useState(false)
+  const [hearts, setHearts] = useState<Array<{ id: number, x: number, y: number }>>([])
+  const [notification, setNotification] = useState('')
+  const [heartClicks, setHeartClicks] = useState(0)
+
+  const handleHeartClick = () => {
+    const newHearts = Array.from({ length: 8 }, (_, i) => ({
+      id: Date.now() + i,
+      x: Math.random() * 50 + 110,
+      y: Math.random() * 60 + 50
+    }))
+    setHearts(prev => [...prev, ...newHearts])
+    
+    setHeartClicks(prev => {
+      const newCount = prev + 1
+      if (newCount >= 100) {
+        return 0 // Reset after 100 clicks
+      }
+      return newCount
+    })
+    
+    setTimeout(() => {
+      setHearts(prev => prev.filter(heart => !newHearts.find(h => h.id === heart.id)))
+    }, 2000)
+  }
+
+  const copyContract = async () => {
+    const contractAddress = 'DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX'
+    try {
+      await navigator.clipboard.writeText(contractAddress)
+      setNotification('CA COPIED!')
+      setTimeout(() => setNotification(''), 2000)
+    } catch (err) {
+      setNotification('COPY FAIL!')
+      setTimeout(() => setNotification(''), 2000)
+    }
+    setShowContract(true)
+  }
+
   return (
-    <main style={{ width: '100vw', height: '100vh' }}>
+    <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div className="tamagotchi-device">
         <div className="screen-container">
-          <Scene />
+          <Scene heartClicks={heartClicks} />
           <div className="ui-overlay">
-            <div className="contract-info">
-              Contract: 0x1234...5678
-            </div>
             <div className="steve-text">
               STEVE
             </div>
-            <div className="social-links">
-              <a href="#" className="social-link">TW</a>
-              <a href="#" className="social-link">TG</a>
-              <a href="#" className="social-link">DC</a>
+            <div className="heart-bar">
+              <div className="heart-bar-label">♥</div>
+              <div className="heart-bar-container">
+                <div 
+                  className="heart-bar-fill" 
+                  style={{ width: `${heartClicks}%` }}
+                ></div>
+              </div>
+              <div className="heart-counter">{heartClicks}/100</div>
             </div>
           </div>
         </div>
 
         <div className="buttons-container">
           <div className="button-group">
-            <button className="tamagotchi-button">A</button>
-            <button className="tamagotchi-button">B</button>
+            <button 
+              className="tamagotchi-button"
+              onClick={() => window.open('https://x.com/schitzoe', '_blank')}
+            >
+              E
+            </button>
+            <button 
+              className="tamagotchi-button"
+              onClick={copyContract}
+            >
+              C
+            </button>
           </div>
           
           <div className="button-group">
-            <button className="tamagotchi-button center-button">♥</button>
+            <button 
+              className="tamagotchi-button center-button"
+              onClick={handleHeartClick}
+            >
+              ♥
+            </button>
           </div>
           
           <div className="button-group">
-            <button className="tamagotchi-button">C</button>
-            <button className="tamagotchi-button">D</button>
+            <button 
+              className="tamagotchi-button"
+              onClick={() => window.open('https://x.com/dogsteve', '_blank')}
+            >
+              X
+            </button>
+            <button 
+              className="tamagotchi-button"
+              onClick={() => window.open('https://pump.fun', '_blank')}
+            >
+              P
+            </button>
           </div>
         </div>
+
+        {/* Hearts centered over screen */}
+        <div className="hearts-container">
+          {hearts.map(heart => (
+            <div
+              key={heart.id}
+              className="floating-heart"
+              style={{
+                left: `${heart.x}px`,
+                top: `${heart.y}px`
+              }}
+            >
+              ♥
+            </div>
+          ))}
+        </div>
+
+        {showContract && (
+          <div className="contract-display">
+            <div className="contract-text">
+              DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX
+              <button 
+                className="close-button"
+                onClick={() => setShowContract(false)}
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
+
+        {notification && (
+          <div className="notification">
+            {notification}
+          </div>
+        )}
       </div>
     </main>
   )

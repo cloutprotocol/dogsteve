@@ -4,8 +4,9 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { Html, useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
+import TradingChart from './TradingChart'
 
-export default function Nintendo64Logo() {
+export default function Nintendo64Logo({ heartClicks }: { heartClicks: number }) {
   const logoRef = useRef<THREE.Group>(null)
   const modelRef = useRef<THREE.Group>(null)
   const { scene } = useGLTF('/tsteve.glb')
@@ -24,6 +25,9 @@ export default function Nintendo64Logo() {
 
   return (
     <group ref={logoRef}>
+      {/* Trading Chart Background */}
+      <TradingChart heartClicks={heartClicks} />
+      
       {/* Main 3D model */}
       <primitive 
         ref={modelRef}
@@ -31,7 +35,6 @@ export default function Nintendo64Logo() {
         position={[0, 0, 0]}
         scale={[1.5, 1.5, 1.5]}
       />
-
 
       {/* Space debris/asteroids */}
       <mesh position={[4, 2, -3]} rotation={[0, 0, Math.PI / 6]}>
