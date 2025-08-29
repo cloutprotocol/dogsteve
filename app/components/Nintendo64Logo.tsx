@@ -2,27 +2,66 @@
 
 import { useRef, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
-import { Html, useGLTF } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import TradingChart from './TradingChart'
 
-export default function Nintendo64Logo({ heartClicks, heartJustClicked, joystickInput }: { heartClicks: number, heartJustClicked?: boolean, joystickInput?: { x: number, y: number } }) {
+export default function Nintendo64Logo({ heartClicks, heartJustClicked, joystickInput, isLevelingUp }: { heartClicks: number, heartJustClicked?: boolean, joystickInput?: { x: number, y: number }, isLevelingUp?: boolean }) {
   const logoRef = useRef<THREE.Group>(null)
   const modelRef = useRef<THREE.Group>(null)
   const { scene } = useGLTF('/tsteve.glb')
   const rotationRef = useRef({ x: 0, y: 0 })
-
-  // Apply shader effect to all meshes in the model
+  const isUpdatingMaterials = useRef(false)
+  
+  // Cleanup effect to prevent memory leaks
   useEffect(() => {
-    if (scene) {
+    return () => {
+      if (scene) {
+        scene.traverse((child) => {
+          if (child instanceof THREE.Mesh && child.material) {
+            // Restore original materials on cleanup
+            const originalMaterial = (child.userData as any).originalMaterial
+            if (originalMaterial) {
+              child.material = originalMaterial
+            }
+          }
+        })
+      }
+    }
+  }, [scene])
+
+  // Apply shader effect to all meshes in the model - optimized with better error handling
+  useEffect(() => {
+    if (!scene) return
+    
+    try {
       scene.traverse((child) => {
         if (child instanceof THREE.Mesh && child.material) {
-          // Store original material
+          // Store original material safely
           if (!(child.userData as any).originalMaterial) {
             (child.userData as any).originalMaterial = child.material.clone()
           }
+          
+          // Ensure material has proper emissive properties
+          if (child.material instanceof THREE.MeshStandardMaterial) {
+            // Initialize emissive properties safely
+            try {
+              if (!child.material.emissive) {
+                child.material.emissive = new THREE.Color(0, 0, 0)
+              }
+              if (typeof child.material.emissiveIntensity !== 'number') {
+                child.material.emissiveIntensity = 0
+              }
+              // Mark as initialized
+              (child.userData as any).materialInitialized = true
+            } catch (matError) {
+              console.warn('Material property initialization failed:', matError)
+            }
+          }
         }
       })
+    } catch (error) {
+      console.warn('Material initialization error:', error)
     }
   }, [scene])
 
@@ -59,45 +98,84 @@ export default function Nintendo64Logo({ heartClicks, heartJustClicked, joystick
         rotationRef.current.y = state.clock.elapsedTime * 0.3
       }
 
-      // Apply progressive glow effect based on heart clicks
-      if (scene) {
-        scene.traverse((child) => {
-          if (child instanceof THREE.Mesh && child.material instanceof THREE.MeshStandardMaterial) {
-            // Only glow when heart is pressed or at 100%
-            const chargeLevel = heartClicks / 100
-            
-            // Explosion effect at 100%
+      // Simplified material updates to prevent Three.js errors - skip during level transitions
+      if (scene && !isUpdatingMaterials.current && !isLevelingUp && (heartJustClicked || heartClicks >= 100)) {
+        isUpdatingMaterials.current = true
+        
+        // Use setTimeout to defer material updates and prevent render conflicts
+        setTimeout(() => {
+          try {
+            // Calculate effects once
             const isFullyCharged = heartClicks >= 100
-            const explosionIntensity = isFullyCharged ? 2 + Math.sin(state.clock.elapsedTime * 10) * 1.5 : 0
-            
-            // Heart click pulse effect - green glow
-            const pulseIntensity = heartJustClicked ? 1.5 + Math.sin(state.clock.elapsedTime * 20) * 0.8 : 0
-            
-            // Combine effects (no base glow)
+            const explosionIntensity = isFullyCharged ? 2 : 0
+            const pulseIntensity = heartJustClicked ? 1.5 : 0
             const totalIntensity = explosionIntensity + pulseIntensity
             
-            if (totalIntensity > 0) {
-              // Green glow for heart clicks, white for explosion
-              const red = explosionIntensity > 0 ? Math.min(1, explosionIntensity * 0.5) : 0
-              const green = pulseIntensity > 0 ? 1 : Math.min(1, explosionIntensity * 0.5)
-              const blue = explosionIntensity > 0 ? Math.min(1, explosionIntensity * 0.5) : 0
+            if (totalIntensity > 0 && scene) {
+              // Pre-calculate colors
+              const red = explosionIntensity > 0 ? 0.5 : 0
+              const green = pulseIntensity > 0 ? 1 : 0.5
+              const blue = explosionIntensity > 0 ? 0.5 : 0
               
-              child.material.emissive.setRGB(red * totalIntensity, green * totalIntensity, blue * totalIntensity)
-              child.material.emissiveIntensity = totalIntensity
+              scene.traverse((child) => {
+                try {
+                  if (child instanceof THREE.Mesh && 
+                      child.material instanceof THREE.MeshStandardMaterial &&
+                      child.material.emissive &&
+                      (child.userData as any).materialInitialized) {
+                    
+                    // Safely update emissive properties with validation
+                    if (child.material.emissive && typeof child.material.emissive.setRGB === 'function') {
+                      child.material.emissive.setRGB(red * totalIntensity, green * totalIntensity, blue * totalIntensity)
+                      child.material.emissiveIntensity = totalIntensity
+                    }
+                  }
+                } catch (childError) {
+                  // Silently skip problematic children
+                }
+              })
               
               // Scale effect for explosion
-              if (isFullyCharged && modelRef.current) {
-                const scaleBoost = 1 + Math.sin(state.clock.elapsedTime * 5) * 0.1
+              if (modelRef.current) {
+                const scaleBoost = isFullyCharged ? 1.1 : 1
                 modelRef.current.scale.setScalar(1.5 * scaleBoost)
-              } else if (modelRef.current) {
-                modelRef.current.scale.setScalar(1.5)
               }
-            } else {
-              child.material.emissive.setRGB(0, 0, 0)
-              child.material.emissiveIntensity = 0
             }
+          } catch (error) {
+            console.warn('Material update deferred error:', error)
+          } finally {
+            isUpdatingMaterials.current = false
           }
-        })
+        }, 0)
+      } else if (scene && !heartJustClicked && heartClicks < 100 && !isUpdatingMaterials.current && !isLevelingUp) {
+        // Reset materials when no effects are active - also deferred
+        setTimeout(() => {
+          try {
+            if (scene) {
+              scene.traverse((child) => {
+                try {
+                  if (child instanceof THREE.Mesh && 
+                      child.material instanceof THREE.MeshStandardMaterial &&
+                      child.material.emissive &&
+                      (child.userData as any).materialInitialized) {
+                    
+                    if (child.material.emissive && typeof child.material.emissive.setRGB === 'function') {
+                      child.material.emissive.setRGB(0, 0, 0)
+                      child.material.emissiveIntensity = 0
+                    }
+                  }
+                } catch (childError) {
+                  // Silently skip problematic children
+                }
+              })
+            }
+            if (modelRef.current) {
+              modelRef.current.scale.setScalar(1.5)
+            }
+          } catch (error) {
+            console.warn('Material reset deferred error:', error)
+          }
+        }, 0)
       }
     }
   })

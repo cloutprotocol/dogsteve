@@ -6,23 +6,28 @@ import Joystick from './components/Joystick'
 import PsychedelicBackground from './components/PsychedelicBackground'
 
 export default function Home() {
-  const [showContract, setShowContract] = useState(false)
+
   const [hearts, setHearts] = useState<Array<{ id: number, x: number, y: number }>>([])
   const [notification, setNotification] = useState('')
   const [heartClicks, setHeartClicks] = useState(0)
   const [heartJustClicked, setHeartJustClicked] = useState(false)
-  const [level, setLevel] = useState(0)
+  const [level, setLevel] = useState(1) // Start at level 1 (Earth)
   const [totalHeartClicks, setTotalHeartClicks] = useState(0)
   const [joystickInput, setJoystickInput] = useState({ x: 0, y: 0 })
+  const [isLevelingUp, setIsLevelingUp] = useState(false)
 
   // Update level based on total clicks
   useEffect(() => {
-    const newLevel = Math.floor(totalHeartClicks / 100)
+    const newLevel = Math.max(1, Math.floor(totalHeartClicks / 100) + 1) // Start at level 1
     if (newLevel !== level && newLevel > level) {
+      setIsLevelingUp(true)
       setLevel(newLevel)
       // Show level up notification
       setNotification(`LEVEL ${newLevel}!`)
-      setTimeout(() => setNotification(''), 2000)
+      setTimeout(() => {
+        setNotification('')
+        setIsLevelingUp(false)
+      }, 3000) // Longer duration for physics animation
     }
   }, [totalHeartClicks, level])
 
@@ -92,16 +97,25 @@ export default function Home() {
     }
   }, [playTone])
 
-  const handleHeartClick = () => {
+  const handleHeartClick = useCallback(() => {
     setHeartJustClicked(true)
     setTimeout(() => setHeartJustClicked(false), 500)
     
-    const newHearts = Array.from({ length: 8 }, (_, i) => ({
-      id: Date.now() + i,
+    // Generate minimal hearts for better performance
+    const heartCount = 2 // Only 2 hearts per click
+    const timestamp = Date.now()
+    const newHearts = Array.from({ length: heartCount }, (_, i) => ({
+      id: timestamp + i,
       x: Math.random() * 60 + 20, // 20% to 80% of container width
       y: Math.random() * 60 + 20  // 20% to 80% of container height
     }))
-    setHearts(prev => [...prev, ...newHearts])
+    
+    setHearts(prev => {
+      // Strict limit on total hearts
+      const maxHearts = 6 // Maximum 6 hearts total
+      const combined = [...prev, ...newHearts]
+      return combined.length > maxHearts ? combined.slice(-maxHearts) : combined
+    })
     
     // Increment total clicks (never resets)
     setTotalHeartClicks(prev => prev + 1)
@@ -119,10 +133,11 @@ export default function Home() {
       }
     })
     
+    // Auto-cleanup hearts after 2 seconds
     setTimeout(() => {
       setHearts(prev => prev.filter(heart => !newHearts.find(h => h.id === heart.id)))
     }, 2000)
-  }
+  }, [playExplosionSound, playHeartSound])
 
   const copyContract = async () => {
     const contractAddress = 'DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX'
@@ -143,7 +158,15 @@ export default function Home() {
       <PsychedelicBackground />
       <div className="tamagotchi-device">
         <div className="screen-container">
-          <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} notification={notification} />
+          <Scene 
+            heartClicks={heartClicks} 
+            heartJustClicked={heartJustClicked} 
+            joystickInput={joystickInput} 
+            notification={notification}
+            level={level}
+            isLevelingUp={isLevelingUp}
+            hearts={hearts}
+          />
           <div className="ui-overlay">
             <div className="steve-text">
               {level > 0 ? `LVL ${level} STEVE` : 'STEVE'}
@@ -224,21 +247,7 @@ export default function Home() {
           </button>
         </div>
 
-        {/* Hearts centered over screen */}
-        <div className="hearts-container">
-          {hearts.map(heart => (
-            <div
-              key={heart.id}
-              className="floating-heart"
-              style={{
-                left: `${heart.x}%`,
-                top: `${heart.y}%`
-              }}
-            >
-              ♥
-            </div>
-          ))}
-        </div>
+        {/* Hearts are now rendered in 3D scene */}
 
 
 

@@ -1,12 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-
-declare global {
-  interface Window {
-    THREE: any
-  }
-}
+import * as THREE from 'three'
 
 export default function PsychedelicBackground() {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -32,14 +27,10 @@ export default function PsychedelicBackground() {
   useEffect(() => {
     if (typeof window === 'undefined' || !isDesktop) return
 
-    // Load Three.js dynamically
-    const script = document.createElement('script')
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js'
-    script.onload = initWorld
-    document.head.appendChild(script)
+    // Initialize world directly without loading external Three.js
+    initWorld()
 
     return () => {
-      document.head.removeChild(script)
       if (worldRef.current) {
         worldRef.current.cleanup?.()
       }
@@ -47,7 +38,7 @@ export default function PsychedelicBackground() {
   }, [isDesktop])
 
   const initWorld = () => {
-    if (!containerRef.current || !window.THREE) return
+    if (!containerRef.current) return
 
     class World {
       renderer: any
@@ -60,17 +51,17 @@ export default function PsychedelicBackground() {
       targetMousePos = { x: 0, y: 0 }
 
       constructor(container: HTMLElement) {
-        this.renderer = new window.THREE.WebGLRenderer({
+        this.renderer = new THREE.WebGLRenderer({
           alpha: true,
           antialias: true
         })
         
         this.renderer.setPixelRatio(window.devicePixelRatio)
         this.renderer.setSize(window.innerWidth, window.innerHeight)
-        this.scene = new window.THREE.Scene()
+        this.scene = new THREE.Scene()
         
         const aspectRatio = window.innerWidth / window.innerHeight
-        this.camera = new window.THREE.PerspectiveCamera(50, aspectRatio, 0.1, 20000)
+        this.camera = new THREE.PerspectiveCamera(50, aspectRatio, 0.1, 20000)
         this.camera.position.z = 200
         
         container.appendChild(this.renderer.domElement)
@@ -209,21 +200,21 @@ export default function PsychedelicBackground() {
           }
         `
 
-        this.material = new window.THREE.RawShaderMaterial({
+        this.material = new THREE.RawShaderMaterial({
           vertexShader,
           fragmentShader,
           uniforms: {
-            uTime: { type: 'f', value: 0 },
-            uHue: { type: 'f', value: 0.44 },
-            uHueVariation: { type: 'f', value: 0 },
-            uDensity: { type: 'f', value: 0.1 },
-            uDisplacement: { type: 'f', value: 0.11 },
-            uMousePosition: { type: 'v2', value: new window.THREE.Vector2(0.5, 0.5) }
+            uTime: { value: 0 },
+            uHue: { value: 0.44 },
+            uHueVariation: { value: 0 },
+            uDensity: { value: 0.1 },
+            uDisplacement: { value: 0.11 },
+            uMousePosition: { value: new THREE.Vector2(0.5, 0.5) }
           }
         })
 
-        const planeGeometry = new window.THREE.PlaneGeometry(2, 2, 1, 1)
-        this.plane = new window.THREE.Mesh(planeGeometry, this.material)
+        const planeGeometry = new THREE.PlaneGeometry(2, 2, 1, 1)
+        this.plane = new THREE.Mesh(planeGeometry, this.material)
         this.scene.add(this.plane)
       }
 
@@ -257,7 +248,7 @@ export default function PsychedelicBackground() {
         this.mousePos.y += (this.targetMousePos.y - this.mousePos.y) * 0.1
 
         if (this.plane) {
-          this.material.uniforms.uMousePosition.value = new window.THREE.Vector2(
+          this.material.uniforms.uMousePosition.value = new THREE.Vector2(
             this.mousePos.x, 
             this.mousePos.y
           )

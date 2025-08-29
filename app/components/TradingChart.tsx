@@ -21,30 +21,44 @@ export default function TradingChart({ heartClicks }: { heartClicks: number }) {
     return { bars }
   }, [])
 
-  useFrame(() => {
-    if (chartRef.current) {
+  useFrame((state) => {
+    if (!chartRef.current) return
+    
+    try {
+      // Pre-calculate values to avoid repeated calculations
+      const barsToFill = Math.floor((heartClicks / 100) * 20)
+      const currentTime = state.clock.elapsedTime
+      
       chartRef.current.children.forEach((child, i) => {
-        if (child instanceof THREE.Mesh && i < chartData.bars.length) {
-          // Calculate how many bars should be filled based on heartClicks
-          const barsToFill = Math.floor((heartClicks / 100) * 20)
-          const shouldFill = i < barsToFill
+        if (!(child instanceof THREE.Mesh) || i >= chartData.bars.length) return
+        
+        const shouldFill = i < barsToFill
+        
+        // Progressive height - each bar gets taller than the previous
+        const progressMultiplier = shouldFill ? (i + 1) / 20 : 0
+        const baseHeight = shouldFill ? 0.3 + (heartClicks / 100) * 2.5 * progressMultiplier : 0.2
+        const variation = shouldFill ? Math.sin(currentTime + i * 0.5) * 0.2 : 0
+        const newHeight = Math.max(0.1, baseHeight + variation)
+        
+        child.scale.y = newHeight
+        child.position.y = -1.5 + newHeight / 2
+        
+        // Change color based on fill state - only update if needed
+        if (child.material instanceof THREE.MeshStandardMaterial) {
+          const targetColor = shouldFill ? 0x00ff88 : 0x004422
+          const targetOpacity = shouldFill ? 0.9 : 0.3
           
-          // Progressive height - each bar gets taller than the previous
-          const progressMultiplier = shouldFill ? (i + 1) / 20 : 0
-          const baseHeight = shouldFill ? 0.3 + (heartClicks / 100) * 2.5 * progressMultiplier : 0.2
-          const variation = shouldFill ? Math.sin(Date.now() * 0.001 + i * 0.5) * 0.2 : 0
-          const newHeight = Math.max(0.1, baseHeight + variation)
-          
-          child.scale.y = newHeight
-          child.position.y = -1.5 + newHeight / 2
-          
-          // Change color based on fill state
-          if (child.material instanceof THREE.MeshStandardMaterial) {
-            child.material.color.setHex(shouldFill ? 0x00ff88 : 0x004422)
-            child.material.opacity = shouldFill ? 0.9 : 0.3
+          // Only update if different to prevent unnecessary updates
+          if (child.material.color.getHex() !== targetColor) {
+            child.material.color.setHex(targetColor)
+          }
+          if (Math.abs(child.material.opacity - targetOpacity) > 0.01) {
+            child.material.opacity = targetOpacity
           }
         }
       })
+    } catch (error) {
+      console.warn('TradingChart update error:', error)
     }
   })
 
