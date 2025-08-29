@@ -1,13 +1,12 @@
-# DOGSTEVE - Nintendo 64 Tribute
-
-A minimal React Three.js recreation of the Nintendo 64 startup screen for a coin launch.
+# STEVE
 
 ## Features
 
-- 🎮 Authentic N64 startup screen recreation
-- ✨ Metallic chrome materials with reflections
-- 🎯 Smooth animations and lighting
-- 📱 Contract address display
+- 🎮 Tamagotchi-style device interface
+- ✨ 3D floating Steve model
+- 📈 Interactive trading chart
+- ♥ Heart clicking game with progress bar
+- 📱 Contract address copy functionality
 - 🔗 Social media links
 - 🚀 Optimized for Vercel deployment
 
@@ -31,12 +30,6 @@ Then deploy to Vercel or run:
 ```bash
 vercel deploy
 ```
-
-## Customization
-
-- Update contract address in `app/page.tsx`
-- Add your social links in the same file
-- Modify logo text in `app/components/Nintendo64Logo.tsx`
 
 ## Tech Stack
 

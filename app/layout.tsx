@@ -4,8 +4,8 @@ import { Inter } from 'next/font/google'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: 'DOGSTEVE - Nintendo 64 Tribute',
-  description: 'A Nintendo 64 inspired coin launch experience',
+  title: 'STEVE',
+  description: 'STEVE',
 }
 
 export default function RootLayout({

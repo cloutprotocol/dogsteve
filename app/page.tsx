@@ -8,8 +8,11 @@ export default function Home() {
   const [hearts, setHearts] = useState<Array<{ id: number, x: number, y: number }>>([])
   const [notification, setNotification] = useState('')
   const [heartClicks, setHeartClicks] = useState(0)
+  const [heartJustClicked, setHeartJustClicked] = useState(false)
 
   const handleHeartClick = () => {
+    setHeartJustClicked(true)
+    setTimeout(() => setHeartJustClicked(false), 500)
     const newHearts = Array.from({ length: 8 }, (_, i) => ({
       id: Date.now() + i,
       x: Math.random() * 50 + 110,
@@ -40,14 +43,13 @@ export default function Home() {
       setNotification('COPY FAIL!')
       setTimeout(() => setNotification(''), 2000)
     }
-    setShowContract(true)
   }
 
   return (
     <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div className="tamagotchi-device">
         <div className="screen-container">
-          <Scene heartClicks={heartClicks} />
+          <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} />
           <div className="ui-overlay">
             <div className="steve-text">
               STEVE
@@ -93,7 +95,7 @@ export default function Home() {
           <div className="button-group">
             <button 
               className="tamagotchi-button"
-              onClick={() => window.open('https://x.com/dogsteve', '_blank')}
+              onClick={() => window.open('https://x.com/dogstevecoin', '_blank')}
             >
               X
             </button>
@@ -122,25 +124,16 @@ export default function Home() {
           ))}
         </div>
 
-        {showContract && (
-          <div className="contract-display">
-            <div className="contract-text">
-              DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX
-              <button 
-                className="close-button"
-                onClick={() => setShowContract(false)}
-              >
-                ×
-              </button>
-            </div>
-          </div>
-        )}
 
         {notification && (
           <div className="notification">
             {notification}
           </div>
         )}
+
+        <div className="contract-always-visible">
+          DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX
+        </div>
       </div>
     </main>
   )
