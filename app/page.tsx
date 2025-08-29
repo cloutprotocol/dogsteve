@@ -94,8 +94,8 @@ export default function Home() {
     
     const newHearts = Array.from({ length: 8 }, (_, i) => ({
       id: Date.now() + i,
-      x: Math.random() * 50 + 110,
-      y: Math.random() * 60 + 50
+      x: Math.random() * 60 + 20, // 20% to 80% of container width
+      y: Math.random() * 60 + 20  // 20% to 80% of container height
     }))
     setHearts(prev => [...prev, ...newHearts])
     
@@ -135,10 +135,10 @@ export default function Home() {
   }
 
   return (
-    <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '40px 0' }}>
+    <main style={{ width: '100vw', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
       <div className="tamagotchi-device">
         <div className="screen-container">
-          <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} />
+          <Scene heartClicks={heartClicks} heartJustClicked={heartJustClicked} joystickInput={joystickInput} notification={notification} />
           <div className="ui-overlay">
             <div className="steve-text">
               {level > 0 ? `LVL ${level} STEVE` : 'STEVE'}
@@ -226,8 +226,8 @@ export default function Home() {
               key={heart.id}
               className="floating-heart"
               style={{
-                left: `${heart.x}px`,
-                top: `${heart.y}px`
+                left: `${heart.x}%`,
+                top: `${heart.y}%`
               }}
             >
               ♥
@@ -236,11 +236,6 @@ export default function Home() {
         </div>
 
 
-        {notification && (
-          <div className="notification">
-            {notification}
-          </div>
-        )}
 
         <div className="contract-always-visible">
           DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX
@@ -248,7 +243,7 @@ export default function Home() {
 
         {/* Gameboy bottom section for mobile */}
         <div className="gameboy-bottom">
-          <div className="gameboy-speaker"></div>
+          <div className="gameboy-speaker">DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX</div>
         </div>
       </div>
     </main>

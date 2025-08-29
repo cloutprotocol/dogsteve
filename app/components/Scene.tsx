@@ -18,7 +18,15 @@ function LoadingScreen() {
   )
 }
 
-export default function Scene({ heartClicks, heartJustClicked, joystickInput }: { heartClicks: number, heartJustClicked: boolean, joystickInput?: { x: number, y: number } }) {
+function NotificationOverlay({ message }: { message: string }) {
+  return (
+    <div className="notification-overlay">
+      <div className="notification-text">{message}</div>
+    </div>
+  )
+}
+
+export default function Scene({ heartClicks, heartJustClicked, joystickInput, notification }: { heartClicks: number, heartJustClicked: boolean, joystickInput?: { x: number, y: number }, notification?: string }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -33,6 +41,7 @@ export default function Scene({ heartClicks, heartJustClicked, joystickInput }: 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
       {isLoading && <LoadingScreen />}
+      {notification && <NotificationOverlay message={notification} />}
       <Canvas
         camera={{ position: [0, 0, 4], fov: 50 }}
         gl={{ antialias: true }}
