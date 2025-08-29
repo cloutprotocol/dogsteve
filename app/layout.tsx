@@ -6,6 +6,17 @@ const inter = Inter({ subsets: ['latin'] })
 export const metadata = {
   title: 'STEVE',
   description: 'STEVE',
+  openGraph: {
+    title: 'STEVE',
+    description: 'STEVE',
+    images: ['/steve.jpg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'STEVE',
+    description: 'STEVE',
+    images: ['/steve.jpg'],
+  },
 }
 
 export default function RootLayout({
