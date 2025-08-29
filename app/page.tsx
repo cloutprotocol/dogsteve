@@ -18,8 +18,11 @@ export default function Home() {
   // Update level based on total clicks
   useEffect(() => {
     const newLevel = Math.floor(totalHeartClicks / 100)
-    if (newLevel !== level) {
+    if (newLevel !== level && newLevel > level) {
       setLevel(newLevel)
+      // Show level up notification
+      setNotification(`LEVEL ${newLevel}!`)
+      setTimeout(() => setNotification(''), 2000)
     }
   }, [totalHeartClicks, level])
 
