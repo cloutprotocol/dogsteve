@@ -140,7 +140,7 @@ export default function Home() {
   }, [playExplosionSound, playHeartSound])
 
   const copyContract = async () => {
-    const contractAddress = 'DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX'
+    const contractAddress = '7cbVgS8jo14buppUqBcyVeVtqwC52S9LqDCRhRkJPwpD'
     try {
       await navigator.clipboard.writeText(contractAddress)
       playCopySound() // Success sound
@@ -230,7 +230,7 @@ export default function Home() {
               className="tamagotchi-button"
               onClick={() => {
                 playButtonSound()
-                window.open('https://pump.fun', '_blank')
+                window.open('https://pump.fun/coin/7cbVgS8jo14buppUqBcyVeVtqwC52S9LqDCRhRkJPwpD', '_blank')
               }}
             >
               P
@@ -252,12 +252,12 @@ export default function Home() {
 
 
         <div className="contract-always-visible">
-          DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX
+          7cbVgS8jo14buppUqBcyVeVtqwC52S9LqDCRhRkJPwpD
         </div>
 
         {/* Gameboy bottom section for mobile */}
         <div className="gameboy-bottom">
-          <div className="gameboy-speaker">DogSteve69XxXMLGNoScopeXxX420BlazeitFaggetXxX</div>
+          <div className="gameboy-speaker">7cbVgS8jo14buppUqBcyVeVtqwC52S9LqDCRhRkJPwpD</div>
         </div>
       </div>
     </main>
